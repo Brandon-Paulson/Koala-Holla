@@ -1,17 +1,27 @@
 const express = require('express');
 const koalaRouter = express.Router();
+const pg = require('pg');
+
+const pool = new pg.Pool({
+    database: 'koala_holla', 
+    host: 'localhost',
+    port: 5432,
+  });
 
 // DB CONNECTION
+let koalas = [];
 
 // GET
 koalaRouter.get('/', (req, res) => {
     console.log('Get request for Koalas');
-    res.sendStatus(200);
+    res.send(koalas);
+    //res.sendStatus(200);
 });
 
 // POST
-koalaRouter.post('/', (req, res) => {
+koalaRouter.post('/addKoala', (req, res) => {
     console.log('POST request made for /koalas');
+    console.log(req.body)
     res.sendStatus(201);
 });
 
@@ -27,5 +37,18 @@ koalaRouter.delete('/koalas/:koalaId', (req, res) => {
     res.sendStatus(204);
 });
 
+
+
+koalaRouter.get('/sql', (req, res) => {
+    let queryText = 'SELECT * FROM koalas;';
+    pool.query(queryText)
+        .then((result) => {
+            res.send(result.rows);
+        })
+        .catch((err) => {
+            console.log(`Error making query ${queryText}`, err);
+            res.sendStatus(500);
+        });
+});
 
 module.exports = koalaRouter;

@@ -3,7 +3,6 @@
 // Make a get and post request
 // if else statement to append button to dom
 // onclick function to append to dom: Koala is ready for transport
-
 console.log( 'js' );
 
 // Add a Koala to the database. 
@@ -18,24 +17,22 @@ function getKoalas(){
   }).then((koalas) => {
     console.log('HERE!!!!', koalas)
     let contentDiv = document.querySelector('#viewKoalas');
-    for (let koala of koalas) {
-      contentDiv.innerHTML += `
-          <tr>
-            <td>${koala.name}</td>
-            <td>${koala.age}</td>
-            <td>${koala.gender}</td>
-            <td>${koala.checked}</td>
-            <td>${koala.note}</td>
-            <td>Mark Ready</td>
-            <td>Remove</td>
-          </tr>
-      `;
-    }
+  for (let koala of koalas) {
+  contentDiv.innerHTML += `
+      <tr>
+        <td>${koala.name}</td>
+        <td>${koala.age}</td>
+        <td>${koala.gender}</td>
+        <td>${koala.checked}</td>
+        <td>${koala.note}</td>
+        <td>Remove</td>
+      </tr>`
+      };
   }).catch((error) => {
     console.log(error);
   });
 } // end getKoalas
-
+getKoalas();
 // Save the koala in the database
 function saveKoala(event){
   event.preventDefault();
@@ -51,26 +48,41 @@ function saveKoala(event){
     ready: ready,
     gender: gender,
     note: note
-  }
+  };
+
 console.log(koalasToSubmit);
-  fetch('/koalas', {
+
+fetch('/koalas/addKoala', {
     method: 'POST',
+    headers: {"Content-Type": "application/json",},
     body: JSON.stringify(koalasToSubmit),
-    headers: {
-      "Content-Type": "application/json" 
-    }
   }).then((response) => {
-    console.log('TEST response here:', response.json());
-  })
-  
-  console.log( 'in saveKoala' );
-  // axios call to server to get koalas
- getKoalas()
+    console.log('TEST response here:', response);
+    getKoalas();
+  }).catch((error) => {
+    console.log(error);
+  });
 }
 
-// getKoalas();
-
-
+fetch('/koalas/sql')
+.then((response) => {
+  console.log('Response received:', response);
+  return response.json();   
+  }).then((koalas) => {
+    console.log('HERE!!!!', koalas);
+    let contentDiv = document.querySelector('#viewKoalas');
+    for (let koala of koalas) {
+      contentDiv.innerHTML += `
+          <tr>
+            <td>${koala.name}</td>
+            <td>${koala.age}</td>
+            <td>${koala.gender}</td>
+            <td>${koala.ready}</td>
+            <td>${koala.note}</td>
+            <td> <button> Delete </button> </td>
+          </tr>`
+          };
+});
 
 function deleteRow(event) {
   event.target.parentElement.parentElement.remove();
